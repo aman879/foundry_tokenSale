@@ -41,18 +41,18 @@ contract TokenSaleTest is Test {
         assertEq(ts.getPresaleMinConstributionDetails(), 100000000000000000);
         assertEq(ts.getPresaleMaxConstributionDetails(), 500000000000000000);
         assertEq(ts.getPublicSaleCap(), 2000000000000000000); 
-        assertEq(ts.getpublicSaleMinConstributionDetails(), 100000000000000000);
-        assertEq(ts.getpublicSaleMaxConstributionDetails(), 500000000000000000);
+        assertEq(ts.getPublicSaleMinConstributionDetails(), 100000000000000000);
+        assertEq(ts.getPublicSaleMaxConstributionDetails(), 500000000000000000);
     }
 
     function testPreSale() public {
         address someRondomUser = vm.addr(1);
         vm.startPrank(someRondomUser);
         vm.deal(someRondomUser, 1 ether);
-        vm.expectRevert("Minimum constribution doesnt fullfiled");
+        vm.expectRevert("Minimum contribution not fulfilled");
         ts.presale{value: 0.001 ether}();
 
-        vm.expectRevert("Exceeds Presale Maximum constribution");
+        vm.expectRevert("Exceeds Presale Maximum contribution");
         ts.presale{value: 0.6 ether}();
 
         uint256 amount = 0.3 ether;
@@ -82,7 +82,7 @@ contract TokenSaleTest is Test {
         
         ts.presale{value: amount}();
 
-        vm.expectRevert("Exceeds Presale Maximum constribution");
+        vm.expectRevert("Exceeds Presale Maximum contribution");
         ts.presale{value: amount}();
     }
 
@@ -129,7 +129,7 @@ contract TokenSaleTest is Test {
         ts.publicSale{value: amount}();
 
         ts.endPreSale();
-        vm.expectRevert("Public sale hasnt been satrted yet");
+        vm.expectRevert("Public sale has not started yet");
         ts.publicSale{value: amount}();
 
         ts.endPublicSale();
@@ -147,17 +147,17 @@ contract TokenSaleTest is Test {
 
         vm.startPrank(someRandomUser);
 
-        vm.expectRevert("Minimum criteria doesnt match");
+        vm.expectRevert("Minimum criteria do not match");
         ts.publicSale{value: 0.1 ether}();
 
-        vm.expectRevert("Maximum constribution has been reached");
+        vm.expectRevert("Maximum contribution has been reached");
         ts.publicSale{value: 0.6 ether}();
 
         vm.expectEmit(true, false, false, true);
         emit TokensPurchased(someRandomUser, amount, false);
         ts.publicSale{value: amount}();
 
-        vm.expectRevert("Maximum constribution has been reached");
+        vm.expectRevert("Maximum contribution has been reached");
         ts.publicSale{value: amount}();
         vm.stopPrank();
     }
