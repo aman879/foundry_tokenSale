@@ -203,5 +203,45 @@ contract TokenSaleTest is Test {
         ts.increasePublicSaleCap(0.1 ether);
     }
 
+    function testRefundRevert() public {
+        
+        vm.expectRevert("Public sale is running");
+        ts.refund();
+
+        ts.endPreSale();
+        vm.expectRevert("Public sale is running");
+        ts.refund();
+
+        ts.endPublicSale();
+        vm.expectRevert("Refund not available");
+        ts.refund();
+    }
+
+    function testRefund() public {
+
+        address someRandomUser = vm.addr(1);
+        vm.deal(someRandomUser, 1 ether);
+        uint256 balanceBefore = someRandomUser.balance;
+
+        vm.prank(someRandomUser);
+        ts.presale{value: 0.3 ether}();
+
+        ts.endPreSale();
+        ts.endPublicSale();
+
+        vm.expectRevert("You don't have enough funds");
+        ts.refund();
+
+        vm.startPrank(someRandomUser);
+        uint256 gasStart = gasleft();
+        ts.refund();
+        uint256 gasEnd = gasleft();
+        uint256 balanceAfter = someRandomUser.balance;
+        uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+
+        assertEq(balanceBefore - gasUsed, balanceAfter);
+
+
+    }
 
 }
