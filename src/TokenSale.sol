@@ -5,7 +5,14 @@ pragma solidity ^0.8.19;
 import "../lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
+
 contract TokenSale is ERC20, Ownable {
+
+    // token info
+    uint256 constant public tokenPrice = 0.1 ether;
+    string private tokenName = "ProjectToken";
+    string private tokenSymbol = "PT";
+
     // Variables for presale and public sale parameters
     uint256 private presaleCap;
     uint256 private presaleMinConstribution;
@@ -62,7 +69,7 @@ contract TokenSale is ERC20, Ownable {
         uint256 _publicSaleMinConstribution,
         uint256 _publicSaleMaxConstribution
     )
-        ERC20("ProjectToken", "PT")
+        ERC20(tokenName, tokenSymbol)
         Ownable(msg.sender)
     {
         presaleCap = _presaleCap;
@@ -192,7 +199,11 @@ contract TokenSale is ERC20, Ownable {
     }
 
     // Private function to mint tokens, only callable by the contract
-    function mintToken(address _to, uint256 _value) private {
-        _mint(_to, _value);
+    function mintToken(address _to, uint256 _amount) private {
+        uint256 value = _amount / tokenPrice; 
+        // lets say amount = 400000000000000000
+        // value = 400000000000000000 / 100000000000000000
+        //     = 4 
+        _mint(_to, value * 10 ** decimals());
     }
 }

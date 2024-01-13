@@ -18,7 +18,7 @@ contract TokenSaleTest is Test {
             500000000000000000,
             2000000000000000000,
             100000000000000000,
-            500000000000000000  
+            500000000000000000
         );
     }
 
@@ -242,6 +242,16 @@ contract TokenSaleTest is Test {
         assertEq(balanceBefore - gasUsed, balanceAfter);
 
 
+    }
+
+    function testTokenBalance() public {
+
+        address someRandomUser = vm.addr(1);
+
+        hoax(someRandomUser, 1 ether);
+        ts.presale{value: 0.2 ether}();
+
+        assertEq(ts.balanceOf(someRandomUser), 2 * 1e18);
     }
 
 }
